@@ -1,0 +1,56 @@
+# Install dependencies
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y build-essential libffi-dev libgdbm-dev libncursesw5-dev \
+                    libreadline-dev libsqlite3-dev libssl-dev libbz2-dev \
+                    liblzma-dev zlib1g-dev uuid-dev tk-dev curl  
+
+# Download the required version of Python (3.12.2 in example)
+cd /usr/src
+sudo curl -O https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tgz
+
+# Unpack the archive
+sudo tar -xf Python-3.12.2.tgz
+cd Python-3.12.2
+
+# Build Python
+sudo ./configure --enable-optimizations
+sudo make -j$(nproc)
+
+# Install Python (Do not use make install as it may overwrite the system python3 and cause problems with the system)
+sudo make altinstall
+
+# Check version
+python3.12 --version
+
+# Create and activate a virtual environment with required version of Python
+/usr/local/bin/python3.12 -m venv my_env
+source /my_env/bin/activate
+
+# Install requirments of your project
+pip install --upgrade pip
+pip install -r requirments.txt
+
+# Add your project to my_env
+/my_env/my_project/*
+
+# Add script (run_bot.sh in root of this repository) and give it rights to exec
+/my_env/my_project/run_bot.sh
+chmod +x /my_env/my_project/run_bot.sh
+
+# Create systemd service (tg_bot_service.service in root of this repository)
+sudo nano /etc/systemd/system/tg_bot_service
+sudo systemctl daemon-reload
+sudo systemctl start telegram_bot.service
+sudo systemctl enable telegram_bot.service  # Для автозапуска
+
+
+
+
+
+
+
+
+
+
+
+
